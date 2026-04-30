@@ -35,6 +35,33 @@ import MainLayout from "../layouts/MainLayout.astro";
       <p>Everything synced to the cloud, tied to your account only.</p>
     </div>
   </section>
+
+  <section class="how-it-works">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-number">1</span>
+        <div class="step-content">
+          <h3>Create your account</h3>
+          <p>Sign up in seconds and access your personal habit dashboard.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <div class="step-content">
+          <h3>Add your habits</h3>
+          <p>Define the routines you want to build and customize them as you go.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <div class="step-content">
+          <h3>Track daily progress</h3>
+          <p>Check in every day, watch your streaks grow, and stay consistent.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </MainLayout>
 
 <style>
@@ -80,6 +107,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     max-width: 720px;
+    margin-bottom: 2rem;
   }
 
   .feature-card {
@@ -103,6 +131,62 @@ import MainLayout from "../layouts/MainLayout.astro";
   }
 
   .feature-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
+  .how-it-works {
+    max-width: 720px;
+  }
+
+  .how-it-works h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1.25rem;
+    color: #e2e8f0;
+  }
+
+  .steps {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .step {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem;
+    align-items: center;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1e293b;
+    color: #93c5fd;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid #334155;
+  }
+
+  .step-content h3 {
+    margin: 0 0 0.25rem;
+    font-size: 15px;
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+
+  .step-content p {
     margin: 0;
     font-size: 13px;
     color: #64748b;
