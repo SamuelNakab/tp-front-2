@@ -11,6 +11,30 @@ import MainLayout from "../layouts/MainLayout.astro";
       <a href="/register">Create account</a>
     </div>
   </section>
+
+  <section class="features">
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+        <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      <h3>Track your habits</h3>
+      <p>Mark daily progress with a single click and build momentum.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+        <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+      </svg>
+      <h3>Visualize streaks</h3>
+      <p>See your consistency over time and celebrate your longest runs.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+        <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+      </svg>
+      <h3>Your data, secure</h3>
+      <p>Everything synced to the cloud, tied to your account only.</p>
+    </div>
+  </section>
 </MainLayout>
 
 <style>
@@ -20,14 +44,15 @@ import MainLayout from "../layouts/MainLayout.astro";
     border: 1px solid #1f2937;
     border-radius: 0.75rem;
     padding: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
-  h1 {
+  .hero h1 {
     margin: 0 0 0.75rem;
     line-height: 1.25;
   }
 
-  p {
+  .hero p {
     margin: 0 0 1rem;
     color: #94a3b8;
   }
@@ -37,7 +62,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     gap: 0.75rem;
   }
 
-  a {
+  .actions a {
     text-decoration: none;
     border-radius: 0.5rem;
     border: 1px solid #334155;
@@ -46,7 +71,41 @@ import MainLayout from "../layouts/MainLayout.astro";
     background: #0b1120;
   }
 
-  a:hover {
+  .actions a:hover {
     border-color: #475569;
+  }
+
+  .features {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 720px;
+  }
+
+  .feature-card {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .feature-card svg {
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .feature-card h3 {
+    margin: 0 0 0.4rem;
+    font-size: 15px;
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+
+  .feature-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
   }
 </style>
