@@ -1,21 +1,22 @@
+import { useEffect } from "react";
 import HabitList from "./HabitList";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function DashboardPanel() {
   const { user, loading, signOut, error } = useAuth();
 
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.replace("/login");
+    }
+  }, [loading, user]);
+
   if (loading) {
     return <p>Checking session...</p>;
   }
 
   if (!user) {
-    return (
-      <section>
-        <h1>Access restricted</h1>
-        <p>You must be logged in to view the dashboard.</p>
-        <a href="/login">Go to login</a>
-      </section>
-    );
+    return <p>Redirecting to login...</p>;
   }
 
   return (
@@ -38,7 +39,7 @@ export default function DashboardPanel() {
       >
         Logout
       </button>
-      <HabitList />
+      <HabitList userId={user.id} />
     </section>
   );
 }
