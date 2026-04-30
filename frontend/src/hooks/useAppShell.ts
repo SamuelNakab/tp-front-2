@@ -4,7 +4,6 @@ export type AppShellState = {
   appName: string;
 };
 
-// React hooks are isolated under src/hooks for islands/components that need client interactivity.
 export function useAppShell(): AppShellState {
   return useMemo(
     () => ({
