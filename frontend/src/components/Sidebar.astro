@@ -1,0 +1,71 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = "/" } = Astro.props;
+
+const links = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/login", label: "Login" },
+  { href: "/register", label: "Register" },
+];
+---
+
+<aside class="sidebar">
+  <div class="brand">Habit Tracker</div>
+  <nav>
+    <ul>
+      {
+        links.map((link) => (
+          <li>
+            <a class={currentPath === link.href ? "active" : ""} href={link.href}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  .sidebar {
+    border-right: 1px solid #1e293b;
+    background: #0f172a;
+    padding: 1.5rem 1rem;
+  }
+
+  .brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: #f8fafc;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+    color: #cbd5e1;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+  }
+
+  a:hover {
+    background: #1e293b;
+    color: #f8fafc;
+  }
+
+  .active {
+    background: #334155;
+    color: #f8fafc;
+  }
+</style>
