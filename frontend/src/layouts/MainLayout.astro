@@ -23,7 +23,7 @@ const { title = "Habit Tracker" } = Astro.props;
     <div class="app-shell">
       <Sidebar currentPath={Astro.url.pathname} />
       <div class="content-shell">
-        <Navbar />
+        <Navbar currentPath={Astro.url.pathname} />
         <main class="main-content">
           <slot />
         </main>

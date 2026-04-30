@@ -1,11 +1,52 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Welcome from '../components/Welcome.astro';
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<Layout title="Web App Starter">
-  <Welcome
-    title="Scalable Astro Frontend Structure"
-    description="This starter separates pages, layouts, components, services, and hooks so the app can grow without mixing responsibilities."
-  />
-</Layout>
+<MainLayout title="Habit Tracker | Home">
+  <section class="hero">
+    <h1>Build better routines, one habit at a time.</h1>
+    <p>Track your daily habits, mark progress, and stay consistent with a clean dashboard experience.</p>
+    <div class="actions">
+      <a href="/login">Login</a>
+      <a href="/register">Create account</a>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .hero {
+    max-width: 720px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: #94a3b8;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  a {
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border: 1px solid #334155;
+    padding: 0.5rem 0.75rem;
+    color: #e2e8f0;
+    background: #0b1120;
+  }
+
+  a:hover {
+    border-color: #475569;
+  }
+</style>

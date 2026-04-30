@@ -1,27 +1,21 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import MainLayout from "../layouts/MainLayout.astro";
 import LoginForm from "../components/react/LoginForm";
 ---
 
-<Layout title="Login | Habit Tracker">
-  <main class="auth-wrapper">
-    <section class="card">
-      <h1>Login</h1>
-      <p>Login with your Supabase account credentials.</p>
-      <LoginForm client:load />
-    </section>
-  </main>
-</Layout>
+<MainLayout title="Login | Habit Tracker">
+  <section class="card">
+    <h1>Login</h1>
+    <p>Sign in to access your dashboard.</p>
+    <LoginForm client:load />
+    <p class="helper">
+      Don&apos;t have an account?
+      <a href="/register"> Register here</a>.
+    </p>
+  </section>
+</MainLayout>
 
 <style>
-  .auth-wrapper {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #0b1120;
-    padding: 1rem;
-  }
-
   .card {
     width: 100%;
     max-width: 420px;
@@ -35,6 +29,16 @@ import LoginForm from "../components/react/LoginForm";
   p {
     color: #94a3b8;
     margin: 0.4rem 0 1rem;
+  }
+
+  .helper {
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+  .helper a {
+    color: #60a5fa;
+    text-decoration: none;
   }
 
   form {
