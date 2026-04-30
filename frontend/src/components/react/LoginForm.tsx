@@ -1,10 +1,20 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function LoginForm() {
   const { login, loading, error, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (!loading && user) {
+      window.location.replace("/dashboard");
+    }
+  }, [loading, user]);
+
+  if (loading) {
+    return <p style={{ color: "#94a3b8" }}>Loading...</p>;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

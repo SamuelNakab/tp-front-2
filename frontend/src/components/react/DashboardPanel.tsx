@@ -4,6 +4,11 @@ import { useAuth } from "../../hooks/useAuth";
 
 export default function DashboardPanel() {
   const { user, loading, signOut, error } = useAuth();
+  async function handleLogout() {
+    await signOut();
+    window.location.replace("/login");
+  }
+
 
   useEffect(() => {
     if (!loading && !user) {
@@ -26,7 +31,7 @@ export default function DashboardPanel() {
       {error ? <p style={{ color: "#f87171" }}>{error}</p> : null}
       <button
         type="button"
-        onClick={() => signOut()}
+        onClick={handleLogout}
         style={{
           marginBottom: "1rem",
           borderRadius: "0.5rem",
