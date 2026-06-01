@@ -3,6 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
 
+const GENRES = [
+  'Rock', 'Pop', 'Jazz', 'Blues', 'Soul', 'R&B',
+  'Hip-Hop', 'Electrónica', 'Clásica', 'Reggae',
+  'Folk', 'Metal', 'Punk', 'Funk', 'Indie',
+  'Latin', 'Country', 'Bossa Nova',
+]
+
 function StarPicker({ value, onChange }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -21,6 +28,66 @@ function StarPicker({ value, onChange }) {
         </button>
       ))}
     </span>
+  )
+}
+
+function GenrePicker({ value, onChange }) {
+  const isCustom = value && !GENRES.includes(value)
+  const [showCustom, setShowCustom] = useState(isCustom)
+  const [customVal, setCustomVal] = useState(isCustom ? value : '')
+
+  function selectChip(genre) {
+    setShowCustom(false)
+    setCustomVal('')
+    onChange(genre)
+  }
+
+  function toggleOtro() {
+    const next = !showCustom
+    setShowCustom(next)
+    if (!next) {
+      onChange(value && GENRES.includes(value) ? value : '')
+    } else {
+      onChange(customVal)
+    }
+  }
+
+  function handleCustom(e) {
+    setCustomVal(e.target.value)
+    onChange(e.target.value)
+  }
+
+  return (
+    <div className="genre-picker">
+      <div className="genre-chips">
+        {GENRES.map(g => (
+          <button
+            key={g}
+            type="button"
+            className={`genre-chip ${value === g && !showCustom ? 'active' : ''}`}
+            onClick={() => selectChip(g)}
+          >
+            {g}
+          </button>
+        ))}
+        <button
+          type="button"
+          className={`genre-chip genre-chip-otro ${showCustom ? 'active' : ''}`}
+          onClick={toggleOtro}
+        >
+          + Otro
+        </button>
+      </div>
+      {showCustom && (
+        <input
+          className="genre-custom-input"
+          placeholder="Escribí el género…"
+          value={customVal}
+          onChange={handleCustom}
+          autoFocus
+        />
+      )}
+    </div>
   )
 }
 
@@ -48,10 +115,7 @@ export default function AlbumForm() {
         .eq('id', id)
         .eq('user_id', session.user.id)
         .single()
-      if (error || !data) {
-        navigate('/')
-        return
-      }
+      if (error || !data) { navigate('/'); return }
       setForm(data)
       if (data.cover_url) setCoverPreview(data.cover_url)
       setFetchingAlbum(false)
@@ -73,9 +137,7 @@ export default function AlbumForm() {
 
   async function uploadCover() {
     const path = `${session.user.id}/${Date.now()}_${coverFile.name}`
-    const { error } = await supabase.storage
-      .from('covers')
-      .upload(path, coverFile, { upsert: true })
+    const { error } = await supabase.storage.from('covers').upload(path, coverFile, { upsert: true })
     if (error) throw error
     const { data } = supabase.storage.from('covers').getPublicUrl(path)
     return data.publicUrl
@@ -85,13 +147,9 @@ export default function AlbumForm() {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
       let cover_url = form.cover_url
-
-      if (coverFile) {
-        cover_url = await uploadCover()
-      }
+      if (coverFile) cover_url = await uploadCover()
 
       const payload = {
         title: form.title,
@@ -111,7 +169,6 @@ export default function AlbumForm() {
         const { error } = await supabase.from('albums').insert(payload)
         if (error) throw error
       }
-
       navigate('/')
     } catch (err) {
       setError(err.message)
@@ -120,7 +177,7 @@ export default function AlbumForm() {
     }
   }
 
-  if (fetchingAlbum) return <div className="page-loading">Cargando álbum…</div>
+  if (fetchingAlbum) return <div className="page-loading">Cargando álbum</div>
 
   return (
     <div className="form-page">
@@ -136,45 +193,29 @@ export default function AlbumForm() {
           <div className="form-grid">
             <label>
               Título *
-              <input
-                name="title"
-                value={form.title}
-                onChange={handleField}
-                required
-              />
+              <input name="title" value={form.title} onChange={handleField} required placeholder="nombre del álbum" />
             </label>
             <label>
               Artista *
-              <input
-                name="artist"
-                value={form.artist}
-                onChange={handleField}
-                required
-              />
-            </label>
-            <label>
-              Género
-              <input name="genre" value={form.genre} onChange={handleField} />
+              <input name="artist" value={form.artist} onChange={handleField} required placeholder="nombre del artista" />
             </label>
             <label>
               Año
-              <input
-                name="year"
-                type="number"
-                min="1900"
-                max="2099"
-                value={form.year}
-                onChange={handleField}
-              />
+              <input name="year" type="number" min="1900" max="2099" value={form.year} onChange={handleField} placeholder="ej. 1973" />
             </label>
+          </div>
+
+          <div className="label-block">
+            Género
+            <GenrePicker
+              value={form.genre}
+              onChange={val => setForm(prev => ({ ...prev, genre: val }))}
+            />
           </div>
 
           <label className="label-block">
             Rating
-            <StarPicker
-              value={form.rating}
-              onChange={val => setForm(prev => ({ ...prev, rating: val }))}
-            />
+            <StarPicker value={form.rating} onChange={val => setForm(prev => ({ ...prev, rating: val }))} />
           </label>
 
           <label className="label-block">
