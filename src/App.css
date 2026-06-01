@@ -9,6 +9,8 @@ body {
   color: #1a1a1a;
 }
 
+/* ── Auth ───────────────────────────────────────── */
+
 .auth-container {
   max-width: 380px;
   margin: 80px auto;
@@ -97,32 +99,321 @@ body {
   text-decoration: underline;
 }
 
-.home-container {
-  max-width: 800px;
-  margin: 60px auto;
-  padding: 32px;
-}
+/* ── Shared buttons ─────────────────────────────── */
 
-.home-container h1 {
-  margin-bottom: 8px;
-}
-
-.home-container p {
-  color: #555;
-  margin-bottom: 24px;
-}
-
-.home-container button {
-  padding: 8px 16px;
-  background: #ef4444;
+.btn-primary {
+  padding: 10px 18px;
+  background: #6366f1;
   color: #fff;
   border: none;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 
-.home-container button:hover {
-  background: #dc2626;
+.btn-primary:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-logout {
+  padding: 10px 18px;
+  background: transparent;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-back:hover {
+  text-decoration: underline;
+}
+
+/* ── Loading ────────────────────────────────────── */
+
+.page-loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: #888;
+  font-size: 1rem;
+}
+
+/* ── Dashboard ──────────────────────────────────── */
+
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Empty state ────────────────────────────────── */
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin: 0 0 20px;
+  font-size: 1.1rem;
+}
+
+/* ── Album grid ─────────────────────────────────── */
+
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 20px;
+}
+
+.album-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.album-card:hover,
+.album-card:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.album-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.album-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #9ca3af;
+}
+
+.album-info {
+  padding: 12px;
+}
+
+.album-title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-artist {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-meta {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* ── Stars (display) ────────────────────────────── */
+
+.stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.star {
+  font-size: 0.95rem;
+  color: #d1d5db;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+/* ── Star picker (form) ─────────────────────────── */
+
+.star-picker {
+  display: inline-flex;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.1s, transform 0.1s;
+}
+
+.star-btn.active {
+  color: #f59e0b;
+}
+
+.star-btn:hover {
+  transform: scale(1.15);
+}
+
+/* ── AlbumForm page ─────────────────────────────── */
+
+.form-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 32px 16px 60px;
+}
+
+.form-container {
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.album-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.album-form label,
+.label-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.album-form input,
+.album-form textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.album-form input:focus,
+.album-form textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* ── Cover upload ───────────────────────────────── */
+
+.cover-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cover-preview {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
 }

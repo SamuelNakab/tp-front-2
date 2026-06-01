@@ -3,7 +3,8 @@ import { AuthProvider } from './context/AuthContext'
 import PrivateRoute from './components/PrivateRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
+import AlbumForm from './pages/AlbumForm'
 import './App.css'
 
 export default function App() {
@@ -17,7 +18,23 @@ export default function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Home />
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/new"
+            element={
+              <PrivateRoute>
+                <AlbumForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/edit/:id"
+            element={
+              <PrivateRoute>
+                <AlbumForm />
               </PrivateRoute>
             }
           />

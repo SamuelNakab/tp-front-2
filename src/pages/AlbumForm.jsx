@@ -1,0 +1,212 @@
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../context/AuthContext'
+
+function StarPicker({ value, onChange }) {
+  const [hovered, setHovered] = useState(0)
+  return (
+    <span className="star-picker">
+      {[1, 2, 3, 4, 5].map(n => (
+        <button
+          key={n}
+          type="button"
+          className={`star-btn ${n <= (hovered || value) ? 'active' : ''}`}
+          onMouseEnter={() => setHovered(n)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => onChange(n)}
+          aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
+        >
+          ★
+        </button>
+      ))}
+    </span>
+  )
+}
+
+const EMPTY = { title: '', artist: '', genre: '', year: '', rating: 0, review: '', cover_url: '' }
+
+export default function AlbumForm() {
+  const { id } = useParams()
+  const isEditing = Boolean(id)
+  const navigate = useNavigate()
+  const { session } = useAuth()
+
+  const [form, setForm] = useState(EMPTY)
+  const [coverFile, setCoverFile] = useState(null)
+  const [coverPreview, setCoverPreview] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [fetchingAlbum, setFetchingAlbum] = useState(isEditing)
+
+  useEffect(() => {
+    if (!isEditing) return
+    async function loadAlbum() {
+      const { data, error } = await supabase
+        .from('albums')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', session.user.id)
+        .single()
+      if (error || !data) {
+        navigate('/')
+        return
+      }
+      setForm(data)
+      if (data.cover_url) setCoverPreview(data.cover_url)
+      setFetchingAlbum(false)
+    }
+    loadAlbum()
+  }, [id, isEditing, session, navigate])
+
+  function handleField(e) {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setCoverFile(file)
+    setCoverPreview(URL.createObjectURL(file))
+  }
+
+  async function uploadCover() {
+    const path = `${session.user.id}/${Date.now()}_${coverFile.name}`
+    const { error } = await supabase.storage
+      .from('covers')
+      .upload(path, coverFile, { upsert: true })
+    if (error) throw error
+    const { data } = supabase.storage.from('covers').getPublicUrl(path)
+    return data.publicUrl
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      let cover_url = form.cover_url
+
+      if (coverFile) {
+        cover_url = await uploadCover()
+      }
+
+      const payload = {
+        title: form.title,
+        artist: form.artist,
+        genre: form.genre,
+        year: form.year ? Number(form.year) : null,
+        rating: Number(form.rating),
+        review: form.review,
+        cover_url,
+        user_id: session.user.id,
+      }
+
+      if (isEditing) {
+        const { error } = await supabase.from('albums').update(payload).eq('id', id)
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('albums').insert(payload)
+        if (error) throw error
+      }
+
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetchingAlbum) return <div className="page-loading">Cargando álbum…</div>
+
+  return (
+    <div className="form-page">
+      <div className="form-container">
+        <div className="form-header">
+          <button type="button" className="btn-back" onClick={() => navigate('/')}>
+            ← Volver
+          </button>
+          <h2>{isEditing ? 'Editar álbum' : 'Nuevo álbum'}</h2>
+        </div>
+
+        <form onSubmit={handleSubmit} className="album-form">
+          <div className="form-grid">
+            <label>
+              Título *
+              <input
+                name="title"
+                value={form.title}
+                onChange={handleField}
+                required
+              />
+            </label>
+            <label>
+              Artista *
+              <input
+                name="artist"
+                value={form.artist}
+                onChange={handleField}
+                required
+              />
+            </label>
+            <label>
+              Género
+              <input name="genre" value={form.genre} onChange={handleField} />
+            </label>
+            <label>
+              Año
+              <input
+                name="year"
+                type="number"
+                min="1900"
+                max="2099"
+                value={form.year}
+                onChange={handleField}
+              />
+            </label>
+          </div>
+
+          <label className="label-block">
+            Rating
+            <StarPicker
+              value={form.rating}
+              onChange={val => setForm(prev => ({ ...prev, rating: val }))}
+            />
+          </label>
+
+          <label className="label-block">
+            Reseña
+            <textarea
+              name="review"
+              value={form.review}
+              onChange={handleField}
+              rows={4}
+              placeholder="Tu opinión sobre el álbum…"
+            />
+          </label>
+
+          <label className="label-block">
+            Portada
+            <div className="cover-upload">
+              {coverPreview && (
+                <img className="cover-preview" src={coverPreview} alt="Previsualización" />
+              )}
+              <input type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+          </label>
+
+          {error && <p className="auth-error">{error}</p>}
+
+          <div className="form-footer">
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Guardando…' : isEditing ? 'Guardar cambios' : 'Crear álbum'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
