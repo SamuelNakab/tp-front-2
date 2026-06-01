@@ -37,60 +37,109 @@ export default function Dashboard() {
     navigate('/login')
   }
 
-  if (loading) return <div className="page-loading">Cargando…</div>
+  // Calcular stats
+  const avgRating = albums.length
+    ? (albums.reduce((acc, a) => acc + (a.rating || 0), 0) / albums.length).toFixed(1)
+    : '—'
+  const genres = new Set(albums.map(a => a.genre).filter(Boolean)).size
+
+  if (loading) return <div className="page-loading">Cargando colección</div>
 
   return (
     <div className="dashboard">
+      {/* Header */}
       <header className="dashboard-header">
-        <h1>Mi catálogo</h1>
+        <div className="dashboard-logo">
+          Vinilos
+          <span>tu catálogo musical</span>
+        </div>
         <div className="dashboard-actions">
+          <span className="user-email">{session?.user?.email}</span>
           <button className="btn-primary" onClick={() => navigate('/new')}>
-            + Agregar álbum
+            + Álbum
           </button>
           <button className="btn-logout" onClick={handleLogout}>
-            Cerrar sesión
+            Salir
           </button>
         </div>
       </header>
 
-      {albums.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-icon">♪</p>
-          <p>No tenés álbumes todavía.</p>
-          <button className="btn-primary" onClick={() => navigate('/new')}>
-            Agregá el primero
-          </button>
+      <div className="dashboard-body">
+        {/* Título */}
+        <div className="dashboard-title-row">
+          <h1 className="dashboard-title">Mi colección</h1>
+          <span className="dashboard-count">
+            {albums.length} {albums.length === 1 ? 'álbum' : 'álbumes'}
+          </span>
         </div>
-      ) : (
-        <div className="album-grid">
-          {albums.map(album => (
-            <div
-              key={album.id}
-              className="album-card"
-              onClick={() => navigate(`/edit/${album.id}`)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={e => e.key === 'Enter' && navigate(`/edit/${album.id}`)}
-            >
-              <div className="album-cover">
-                {album.cover_url ? (
-                  <img src={album.cover_url} alt={`Portada de ${album.title}`} />
-                ) : (
-                  <div className="cover-placeholder">♪</div>
-                )}
-              </div>
-              <div className="album-info">
-                <h3 className="album-title">{album.title}</h3>
-                <p className="album-artist">{album.artist}</p>
-                <p className="album-meta">
-                  {[album.genre, album.year].filter(Boolean).join(' · ')}
-                </p>
-                {album.rating > 0 && <Stars rating={album.rating} />}
-              </div>
+
+        {/* Stats bar — solo si hay álbumes */}
+        {albums.length > 0 && (
+          <div className="stats-bar">
+            <div className="stat-item">
+              <div className="stat-number">{albums.length}</div>
+              <div className="stat-label">Álbumes</div>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="stat-item">
+              <div className="stat-number">{genres}</div>
+              <div className="stat-label">Géneros</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{avgRating}★</div>
+              <div className="stat-label">Rating promedio</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">
+                {new Date(albums[0].created_at).getFullYear()}
+              </div>
+              <div className="stat-label">Último añadido</div>
+            </div>
+          </div>
+        )}
+
+        {/* Contenido */}
+        {albums.length === 0 ? (
+          <div className="empty-state">
+            <p className="empty-icon">♪</p>
+            <p>Tu colección está vacía.</p>
+            <button className="btn-primary" onClick={() => navigate('/new')}>
+              Agregá el primero
+            </button>
+          </div>
+        ) : (
+          <div className="album-grid">
+            {albums.map(album => (
+              <div
+                key={album.id}
+                className="album-card"
+                onClick={() => navigate(`/edit/${album.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && navigate(`/edit/${album.id}`)}
+              >
+                <div className="album-cover">
+                  {album.cover_url ? (
+                    <img src={album.cover_url} alt={`Portada de ${album.title}`} />
+                  ) : (
+                    <div className="cover-placeholder">♪</div>
+                  )}
+                  {album.genre && (
+                    <span className="album-genre-badge">{album.genre}</span>
+                  )}
+                </div>
+                <div className="album-info">
+                  <h3 className="album-title">{album.title}</h3>
+                  <p className="album-artist">{album.artist}</p>
+                  <div className="album-meta-row">
+                    <span className="album-year">{album.year || ''}</span>
+                    {album.rating > 0 && <Stars rating={album.rating} />}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

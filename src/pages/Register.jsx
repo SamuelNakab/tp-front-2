@@ -27,36 +27,45 @@ export default function Register() {
 
   return (
     <div className="auth-container">
-      <h2>Crear cuenta</h2>
-      <form onSubmit={handleSubmit} className="auth-form">
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-        </label>
-        <label>
-          Contraseña
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            minLength={6}
-            autoComplete="new-password"
-          />
-        </label>
-        {error && <p className="auth-error">{error}</p>}
-        {message && <p className="auth-message">{message}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registrando…' : 'Registrarse'}
-        </button>
-      </form>
-      <p>¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link></p>
+      <p className="auth-brand">Vinilos</p>
+      <p className="auth-brand-sub">tu catálogo musical</p>
+
+      <div className="auth-card">
+        <h2>Crear cuenta</h2>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="vos@email.com"
+              required
+              autoComplete="email"
+            />
+          </label>
+          <label>
+            Contraseña
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="mínimo 6 caracteres"
+              required
+              minLength={6}
+              autoComplete="new-password"
+            />
+          </label>
+          {error && <p className="auth-error">{error}</p>}
+          {message && <p className="auth-message">{message}</p>}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Registrando…' : 'Registrarse'}
+          </button>
+        </form>
+        <p className="auth-footer">
+          ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
+        </p>
+      </div>
     </div>
   )
 }
