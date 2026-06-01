@@ -18,17 +18,36 @@ function NoteBurst({ active, onDone }) {
 
   useEffect(() => {
     if (!active) return
-    const count = 18
+    const count = 32
     const generated = Array.from({ length: count }, (_, i) => {
-      const angle = (i / count) * 360 + (Math.random() * 20 - 10)
+      // Distribuir en olas: primera ola rápida, segunda más lenta
+      const wave = i < 18 ? 0 : 1
+      const angleBase = (i / (wave === 0 ? 18 : 14)) * 360
+      const angle = angleBase + (Math.random() * 28 - 14)
       const rad = (angle * Math.PI) / 180
-      const dist = 160 + Math.random() * 180
+      const dist = wave === 0
+        ? 220 + Math.random() * 200   // primera ola: lejos
+        : 130 + Math.random() * 130   // segunda ola: media distancia
       const dx = Math.cos(rad) * dist
       const dy = Math.sin(rad) * dist
-      const rot0 = Math.random() * 40 - 20
-      const rot1 = rot0 + (Math.random() * 80 - 40)
-      const dur = 0.7 + Math.random() * 0.5
-      const delay = Math.random() * 0.15
+      const rot0 = Math.random() * 60 - 30
+      const rot1 = rot0 + (Math.random() * 120 - 60)
+      const dur = wave === 0
+        ? 0.75 + Math.random() * 0.35
+        : 0.9  + Math.random() * 0.4
+      const delay = wave === 0
+        ? Math.random() * 0.08
+        : 0.04 + Math.random() * 0.12
+      const size = wave === 0
+        ? 22 + Math.random() * 20   // notas grandes en primera ola
+        : 16 + Math.random() * 14
+      // colores variados
+      const colorRoll = Math.random()
+      const color = colorRoll < 0.5
+        ? 'var(--accent)'
+        : colorRoll < 0.8
+        ? 'var(--warm2)'
+        : '#ffffff'
       return {
         id: i,
         symbol: NOTES[Math.floor(Math.random() * NOTES.length)],
@@ -38,15 +57,15 @@ function NoteBurst({ active, onDone }) {
         rot1: `${rot1}deg`,
         dur: `${dur}s`,
         delay: `${delay}s`,
-        size: 16 + Math.random() * 14,
-        color: Math.random() > 0.5 ? 'var(--accent)' : 'var(--warm2)',
+        size,
+        color,
       }
     })
     setNotes(generated)
     const timeout = setTimeout(() => {
       setNotes([])
       onDone()
-    }, 1200)
+    }, 1500)
     return () => clearTimeout(timeout)
   }, [active])
 
