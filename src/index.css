@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,22 +7,31 @@
 }
 
 :root {
-  --bg: #0a0a0f;
-  --surface: #12121a;
-  --surface2: #1a1a26;
-  --border: rgba(255, 255, 255, 0.07);
-  --border2: rgba(255, 255, 255, 0.13);
-  --text: #e8e4f0;
-  --muted: #7a738a;
-  --accent: #c8a96e;
-  --accent2: #9b6fa8;
-  --star: #e8c96a;
-  --red: #e05a6a;
-  --green: #5acea0;
+  --bg:       #0e0d0b;
+  --surface:  #161410;
+  --surface2: #1e1c18;
+  --surface3: #252219;
 
-  --sans: 'Outfit', sans-serif;
-  --serif: 'DM Serif Display', serif;
-  --mono: 'DM Mono', monospace;
+  --border:   rgba(255, 255, 255, 0.06);
+  --border2:  rgba(255, 255, 255, 0.11);
+
+  --text:     #f0ebe0;
+  --muted:    #7a7060;
+  --faint:    rgba(240, 235, 224, 0.25);
+
+  /* Vinilo rojo cálido en lugar del dorado IA */
+  --accent:   #d4402a;
+  --accent2:  #e8622a;
+  --warm:     #c8924a;
+  --warm2:    #e0b86a;
+
+  --star:     #e0b86a;
+  --red:      #d4402a;
+  --green:    #4aae82;
+
+  --sans:     'Barlow', sans-serif;
+  --cond:     'Barlow Condensed', sans-serif;
+  --serif:    'Playfair Display', serif;
 }
 
 html {
@@ -36,8 +45,11 @@ body {
   color: var(--text);
   font-family: var(--sans);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
   min-height: 100vh;
+
+  /* Grain sutil — no IA, da textura real de papel/vinilo */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 #root {

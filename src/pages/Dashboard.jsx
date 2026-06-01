@@ -13,6 +13,15 @@ function Stars({ rating }) {
   )
 }
 
+// Vinilo SVG como placeholder
+function VinylPlaceholder() {
+  return (
+    <div className="cover-placeholder">
+      <span className="cover-placeholder-note">♪</span>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { session } = useAuth()
   const navigate = useNavigate()
@@ -37,7 +46,6 @@ export default function Dashboard() {
     navigate('/login')
   }
 
-  // Calcular stats
   const avgRating = albums.length
     ? (albums.reduce((acc, a) => acc + (a.rating || 0), 0) / albums.length).toFixed(1)
     : '—'
@@ -47,16 +55,18 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
-      {/* Header */}
       <header className="dashboard-header">
         <div className="dashboard-logo">
-          Vinilos
-          <span>tu catálogo musical</span>
+          <span className="dashboard-logo-text">
+            <em>Vinilos</em>
+          </span>
+          <span className="dashboard-logo-sep" />
+          <span className="dashboard-logo-sub">tu catálogo</span>
         </div>
         <div className="dashboard-actions">
           <span className="user-email">{session?.user?.email}</span>
           <button className="btn-primary" onClick={() => navigate('/new')}>
-            + Álbum
+            + Nuevo álbum
           </button>
           <button className="btn-logout" onClick={handleLogout}>
             Salir
@@ -65,7 +75,6 @@ export default function Dashboard() {
       </header>
 
       <div className="dashboard-body">
-        {/* Título */}
         <div className="dashboard-title-row">
           <h1 className="dashboard-title">Mi colección</h1>
           <span className="dashboard-count">
@@ -73,7 +82,6 @@ export default function Dashboard() {
           </span>
         </div>
 
-        {/* Stats bar — solo si hay álbumes */}
         {albums.length > 0 && (
           <div className="stats-bar">
             <div className="stat-item">
@@ -85,8 +93,8 @@ export default function Dashboard() {
               <div className="stat-label">Géneros</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">{avgRating}★</div>
-              <div className="stat-label">Rating promedio</div>
+              <div className="stat-number">{avgRating}</div>
+              <div className="stat-label">Rating prom.</div>
             </div>
             <div className="stat-item">
               <div className="stat-number">
@@ -97,10 +105,13 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Contenido */}
         {albums.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-icon">♪</p>
+            <div className="empty-vinyl">
+              <div className="empty-vinyl-outer">
+                <div className="empty-vinyl-label" />
+              </div>
+            </div>
             <p>Tu colección está vacía.</p>
             <button className="btn-primary" onClick={() => navigate('/new')}>
               Agregá el primero
@@ -118,11 +129,10 @@ export default function Dashboard() {
                 onKeyDown={e => e.key === 'Enter' && navigate(`/edit/${album.id}`)}
               >
                 <div className="album-cover">
-                  {album.cover_url ? (
-                    <img src={album.cover_url} alt={`Portada de ${album.title}`} />
-                  ) : (
-                    <div className="cover-placeholder">♪</div>
-                  )}
+                  {album.cover_url
+                    ? <img src={album.cover_url} alt={`Portada de ${album.title}`} />
+                    : <VinylPlaceholder />
+                  }
                   {album.genre && (
                     <span className="album-genre-badge">{album.genre}</span>
                   )}

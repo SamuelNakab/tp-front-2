@@ -24,7 +24,9 @@ export default function Login() {
 
   return (
     <div className="auth-container">
-      <p className="auth-brand">Vinilos</p>
+      <p className="auth-brand">
+        <em>Vinilos</em>
+      </p>
       <p className="auth-brand-sub">tu catálogo musical</p>
 
       <div className="auth-card">

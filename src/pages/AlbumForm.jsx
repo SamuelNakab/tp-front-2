@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
@@ -10,6 +10,75 @@ const GENRES = [
   'Latin', 'Country', 'Bossa Nova',
 ]
 
+const NOTES = ['♩', '♪', '♫', '♬', '𝄞', '♭', '♮', '𝄝']
+
+// ─── Animación de notas musicales ────────────────
+function NoteBurst({ active, onDone }) {
+  const [notes, setNotes] = useState([])
+
+  useEffect(() => {
+    if (!active) return
+    const count = 18
+    const generated = Array.from({ length: count }, (_, i) => {
+      const angle = (i / count) * 360 + (Math.random() * 20 - 10)
+      const rad = (angle * Math.PI) / 180
+      const dist = 160 + Math.random() * 180
+      const dx = Math.cos(rad) * dist
+      const dy = Math.sin(rad) * dist
+      const rot0 = Math.random() * 40 - 20
+      const rot1 = rot0 + (Math.random() * 80 - 40)
+      const dur = 0.7 + Math.random() * 0.5
+      const delay = Math.random() * 0.15
+      return {
+        id: i,
+        symbol: NOTES[Math.floor(Math.random() * NOTES.length)],
+        dx: `${dx}px`,
+        dy: `${dy}px`,
+        rot0: `${rot0}deg`,
+        rot1: `${rot1}deg`,
+        dur: `${dur}s`,
+        delay: `${delay}s`,
+        size: 16 + Math.random() * 14,
+        color: Math.random() > 0.5 ? 'var(--accent)' : 'var(--warm2)',
+      }
+    })
+    setNotes(generated)
+    const timeout = setTimeout(() => {
+      setNotes([])
+      onDone()
+    }, 1200)
+    return () => clearTimeout(timeout)
+  }, [active])
+
+  if (!notes.length) return null
+
+  return (
+    <div className="note-burst" aria-hidden="true">
+      {notes.map(n => (
+        <span
+          key={n.id}
+          className="note"
+          style={{
+            '--dx': n.dx,
+            '--dy': n.dy,
+            '--rot0': n.rot0,
+            '--rot1': n.rot1,
+            '--dur': n.dur,
+            animationDelay: n.delay,
+            fontSize: `${n.size}px`,
+            color: n.color,
+            left: '50%',
+            top: '50%',
+          }}
+        >
+          {n.symbol}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+// ─── StarPicker ───────────────────────────────────
 function StarPicker({ value, onChange }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -31,6 +100,7 @@ function StarPicker({ value, onChange }) {
   )
 }
 
+// ─── GenrePicker ──────────────────────────────────
 function GenrePicker({ value, onChange }) {
   const isCustom = value && !GENRES.includes(value)
   const [showCustom, setShowCustom] = useState(isCustom)
@@ -106,6 +176,10 @@ export default function AlbumForm() {
   const [error, setError] = useState('')
   const [fetchingAlbum, setFetchingAlbum] = useState(isEditing)
 
+  // Nota burst
+  const [burst, setBurst] = useState(false)
+  const pendingNav = useRef(false)
+
   useEffect(() => {
     if (!isEditing) return
     async function loadAlbum() {
@@ -165,11 +239,15 @@ export default function AlbumForm() {
       if (isEditing) {
         const { error } = await supabase.from('albums').update(payload).eq('id', id)
         if (error) throw error
+        // editar no tiene burst, navega directo
+        navigate('/')
       } else {
         const { error } = await supabase.from('albums').insert(payload)
         if (error) throw error
+        // disparar burst y luego navegar
+        pendingNav.current = true
+        setBurst(true)
       }
-      navigate('/')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -177,77 +255,100 @@ export default function AlbumForm() {
     }
   }
 
+  async function handleDelete() {
+    if (!window.confirm('¿Eliminar este álbum?')) return
+    await supabase.from('albums').delete().eq('id', id)
+    navigate('/')
+  }
+
+  function handleBurstDone() {
+    setBurst(false)
+    if (pendingNav.current) {
+      pendingNav.current = false
+      navigate('/')
+    }
+  }
+
   if (fetchingAlbum) return <div className="page-loading">Cargando álbum</div>
 
   return (
-    <div className="form-page">
-      <div className="form-container">
-        <div className="form-header">
-          <button type="button" className="btn-back" onClick={() => navigate('/')}>
-            ← Volver
-          </button>
-          <h2>{isEditing ? 'Editar álbum' : 'Nuevo álbum'}</h2>
-        </div>
+    <>
+      <NoteBurst active={burst} onDone={handleBurstDone} />
 
-        <form onSubmit={handleSubmit} className="album-form">
-          <div className="form-grid">
-            <label>
-              Título *
-              <input name="title" value={form.title} onChange={handleField} required placeholder="nombre del álbum" />
-            </label>
-            <label>
-              Artista *
-              <input name="artist" value={form.artist} onChange={handleField} required placeholder="nombre del artista" />
-            </label>
-            <label>
-              Año
-              <input name="year" type="number" min="1900" max="2099" value={form.year} onChange={handleField} placeholder="ej. 1973" />
-            </label>
-          </div>
-
-          <div className="label-block">
-            Género
-            <GenrePicker
-              value={form.genre}
-              onChange={val => setForm(prev => ({ ...prev, genre: val }))}
-            />
-          </div>
-
-          <label className="label-block">
-            Rating
-            <StarPicker value={form.rating} onChange={val => setForm(prev => ({ ...prev, rating: val }))} />
-          </label>
-
-          <label className="label-block">
-            Reseña
-            <textarea
-              name="review"
-              value={form.review}
-              onChange={handleField}
-              rows={4}
-              placeholder="Tu opinión sobre el álbum…"
-            />
-          </label>
-
-          <label className="label-block">
-            Portada
-            <div className="cover-upload">
-              {coverPreview && (
-                <img className="cover-preview" src={coverPreview} alt="Previsualización" />
-              )}
-              <input type="file" accept="image/*" onChange={handleFileChange} />
-            </div>
-          </label>
-
-          {error && <p className="auth-error">{error}</p>}
-
-          <div className="form-footer">
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Guardando…' : isEditing ? 'Guardar cambios' : 'Crear álbum'}
+      <div className="form-page">
+        <div className="form-container">
+          <div className="form-header">
+            <button type="button" className="btn-back" onClick={() => navigate('/')}>
+              ← Volver
             </button>
+            <h2>{isEditing ? 'Editar álbum' : 'Nuevo álbum'}</h2>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit} className="album-form">
+            <div className="form-grid">
+              <label>
+                Título *
+                <input name="title" value={form.title} onChange={handleField} required placeholder="nombre del álbum" />
+              </label>
+              <label>
+                Artista *
+                <input name="artist" value={form.artist} onChange={handleField} required placeholder="nombre del artista" />
+              </label>
+              <label>
+                Año
+                <input name="year" type="number" min="1900" max="2099" value={form.year} onChange={handleField} placeholder="1973" />
+              </label>
+            </div>
+
+            <div className="label-block">
+              Género
+              <GenrePicker
+                value={form.genre}
+                onChange={val => setForm(prev => ({ ...prev, genre: val }))}
+              />
+            </div>
+
+            <label className="label-block">
+              Rating
+              <StarPicker value={form.rating} onChange={val => setForm(prev => ({ ...prev, rating: val }))} />
+            </label>
+
+            <label className="label-block">
+              Reseña
+              <textarea
+                name="review"
+                value={form.review}
+                onChange={handleField}
+                rows={4}
+                placeholder="Tu opinión sobre el álbum…"
+              />
+            </label>
+
+            <label className="label-block">
+              Portada
+              <div className="cover-upload">
+                {coverPreview && (
+                  <img className="cover-preview" src={coverPreview} alt="Previsualización" />
+                )}
+                <input type="file" accept="image/*" onChange={handleFileChange} />
+              </div>
+            </label>
+
+            {error && <p className="auth-error">{error}</p>}
+
+            <div className="form-footer">
+              {isEditing && (
+                <button type="button" className="btn-delete" onClick={handleDelete}>
+                  Eliminar
+                </button>
+              )}
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? 'Guardando…' : isEditing ? 'Guardar cambios' : '✦ Crear álbum'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
